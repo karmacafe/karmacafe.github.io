@@ -12,8 +12,6 @@
   }
   #main {
     display:flex;
-    height:100%;
-    width: 100%;
     background-color: lightslategrey;
     justify-content: center;
     align-items: center;
@@ -41,7 +39,6 @@
   <img src="img/10.jpg">
 </div>
 
-<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 <script>
   function Next(reverse=false){
     let imgs=document.getElementsByTagName("img");
@@ -76,9 +73,9 @@
         Next();
     }
   };
-  var mc = new Hammer(document.getElementById("main"));
-  mc.on("swipeleft", () => Next());
-  mc.on("swiperight", () => Next(true));
+  // var mc = new Hammer(document.getElementById("main"));
+  // mc.on("swipeleft", () => Next());
+  // mc.on("swiperight", () => Next(true));
 </script>
 
 </body>
