@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <title>Karma</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="script" href="https://hammerjs.github.io/dist/hammer.min.js">
 <style>
   html,body{
@@ -15,6 +15,9 @@
     background-color: lightslategrey;
     justify-content: center;
     align-items: center;
+    height:100%;
+    width:100%;
+    overflow: hidden;
   }
   #main > img {
     display:none;
@@ -23,6 +26,11 @@
   }
   #main img.active {
     display:block;
+  }
+  #main img.zoomable {
+    max-height: none;
+    max-width: none;
+    position: absolute;
   }
 </style>
 <body>
@@ -54,11 +62,12 @@
     else if ( i == 0 && reverse)
       return;
     else{
-      imgs[i].classList.remove("active");
+      imgs[i].classList.toggle("zoomable",false);
+      imgs[i].classList.toggle("active",false);
       i = (reverse ? i-1:i+1)%imgs.length;
       if ( i < 0 )
         i = imgs.length-1;
-      imgs[i].classList.add("active");
+      imgs[i].classList.toggle("active",true);
     }
   }
   document.onkeydown= (e) => {
@@ -77,6 +86,14 @@
   var mc = new Hammer(document.getElementById("main"));
   mc.on("swipeleft", () => Next());
   mc.on("swiperight", () => Next(true));
+  mc.on("pinch", (e) => {
+    let img = document.getElementsByClassName("active")[0];
+    let [pw,ph] = [img.width,img.height];
+    img.classList.toggle("zoomable",true);
+    [img.width,img.height] = [pw*e.scale,ph*e.scale];
+    img.style.paddingTop = e.center.y;
+    img.style.paddingLeft = e.center.x;
+  });
 </script>
 
 </body>
