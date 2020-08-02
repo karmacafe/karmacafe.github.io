@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<title>Karma</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="script" href="https://hammerjs.github.io/dist/hammer.min.js">
+<style>
+  html,body{
+    width: 100%;
+    height: 100%;
+    padding:0;
+    margin:0;
+  }
+  #main {
+    display:flex;
+    height:100%;
+    width: 100%;
+    background-color: lightslategrey;
+    justify-content: center;
+    align-items: center;
+  }
+  #main > img {
+    display:none;
+    max-height: 100vh;
+    max-width: 100%;
+  }
+  #main img.active {
+    display:block;
+  }
+</style>
+<body>
+<div id="main">
+  <img class="active" src="img/01.jpg">
+  <img src="img/02.jpg">
+  <img src="img/03.jpg">
+  <img src="img/04.jpg">
+  <img src="img/05.jpg">
+  <img src="img/06.jpg">
+  <img src="img/07.jpg">
+  <img src="img/08.jpg">
+  <img src="img/09.jpg">
+  <img src="img/10.jpg">
+</div>
+
+<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+<script>
+  function Next(reverse=false){
+    let imgs=document.getElementsByTagName("img");
+    let i=0;
+    for(i=0;i<imgs.length;i++){
+      if( imgs[i].classList.contains("active"))
+        break;
+    }
+    // can't go further than the end
+    if (i == imgs.length -1 && !reverse)
+      return;
+    else if ( i == 0 && reverse)
+      return;
+    else{
+      imgs[i].classList.remove("active");
+      i = (reverse ? i-1:i+1)%imgs.length;
+      if ( i < 0 )
+        i = imgs.length-1;
+      imgs[i].classList.add("active");
+    }
+  }
+  document.onkeydown= (e) => {
+    switch(e.keyCode){
+      case 37:
+      case 38:
+        // prev left up
+        Next(true);
+        break;
+      case 39:
+      case 40:
+        // next right down
+        Next();
+    }
+  };
+  var mc = new Hammer(document.getElementById("main"));
+  mc.on("swipeleft", () => Next());
+  mc.on("swiperight", () => Next(true));
+</script>
+
+</body>
+</html>
