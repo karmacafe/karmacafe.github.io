@@ -3,7 +3,8 @@
 <html>
 <title>Karma</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="script" href="https://hammerjs.github.io/dist/hammer.min.js">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
 <style>
   html,body{
     width: 100%;
@@ -12,28 +13,24 @@
     margin:0;
   }
   #main {
-    display:flex;
+    display:block;
     background-color: lightslategrey;
-    justify-content: center;
-    align-items: center;
     height:100%;
     width:100%;
     padding:0;
     margin:0;
-    overflow: hidden;
   }
   #main > img {
     display:none;
-    max-height: 100vh;
+    position: fixed;
     max-width: 100%;
+    max-height: 100%;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
   }
   #main img.active {
     display:block;
-  }
-  #main img.zoomable {
-    max-height: none;
-    max-width: none;
-    position: absolute;
   }
 </style>
 <body>
@@ -51,25 +48,22 @@
 </div>
 
 <script>
-  function Next(reverse=false){
-    let imgs=document.getElementsByTagName("img");
-    let i=0;
-    for(i=0;i<imgs.length;i++){
-      if( imgs[i].classList.contains("active"))
-        break;
-    }
-    // can't go further than the end
-    if (i == imgs.length -1 && !reverse)
+  function move(left){
+    // early abort
+    if ( window.visualViewport.scale > 1 )
       return;
-    else if ( i == 0 && reverse)
+    var img = document.getElementsByClassName("active")[0];
+    var imgs = document.getElementById("main");
+    if ( img == imgs.firstElementChild && left )
+      return;
+    else if ( img == imgs.lastElementChild && !left )
       return;
     else{
-      imgs[i].classList.toggle("zoomable",false);
-      imgs[i].classList.toggle("active",false);
-      i = (reverse ? i-1:i+1)%imgs.length;
-      if ( i < 0 )
-        i = imgs.length-1;
-      imgs[i].classList.toggle("active",true);
+      img.classList.toggle("active",false);
+      if (left)
+        img.previousElementSibling.classList.toggle("active",true);
+      else
+        img.nextElementSibling.classList.toggle("active",true);
     }
   }
   document.addEventListener("keydown", function(e) {
@@ -77,12 +71,12 @@
       case 37:
       case 38:
         // prev left up
-        Next(true);
+        move(true);
         break;
       case 39:
       case 40:
         // next right down
-        Next();
+        move();
     }
   });
   var sx=null;
@@ -102,18 +96,10 @@
         return;
     if( Math.abs(dx) > Math.abs(dy) ){ // horizontal stuff
       if ( dx > 0 )
-        Next(true); // left
+        move(true); // left
       else
-        Next(); // right
+        move(); // right
     }
-    /* vertical is annoying
-    else{
-      if ( dy > 0)
-        Next(true); // up
-      else
-        Next(); // down
-    }
-    */
     sy = null;
     sy = null;
   });
