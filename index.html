@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <title>Karma</title>
@@ -11,24 +12,28 @@
     margin:0;
   }
   #main {
-    display:block;
-    box-sizing: border-box;
-    width:100%;
+    display:flex;
+    background-color: lightslategrey;
+    justify-content: center;
+    align-items: center;
     height:100%;
-    margin:0;
+    width:100%;
     padding:0;
-    background-color: lightslategray;
+    margin:0;
     overflow: hidden;
   }
   #main > img {
     display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%,-50%);
+    max-height: 100vh;
+    max-width: 100%;
   }
   #main img.active {
     display:block;
+  }
+  #main img.zoomable {
+    max-height: none;
+    max-width: none;
+    position: absolute;
   }
 </style>
 <body>
@@ -45,7 +50,6 @@
   <img src="img/10.jpg">
 </div>
 
-<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 <script>
   function Next(reverse=false){
     let imgs=document.getElementsByTagName("img");
@@ -67,19 +71,8 @@
         i = imgs.length-1;
       imgs[i].classList.toggle("active",true);
     }
-    fiximg();
   }
-  function fiximg( ){
-    let img =  document.getElementsByClassName("active")[0];
-    img.height = window.innerHeight;
-  }
-  window.onload = function( ){
-    fiximg();
-  }
-  document.onresize = function( ){
-    fiximg();
-  }
-  document.onkeydown= (e) => {
+  document.addEventListener("keydown", function(e) {
     switch(e.keyCode){
       case 37:
       case 38:
@@ -91,10 +84,39 @@
         // next right down
         Next();
     }
-  };
-  // var mc = new Hammer(document.getElementById("main"));
-  // mc.on("swipeleft", () => Next());
-  // mc.on("swiperight", () => Next(true));
+  });
+  var sx=null;
+  var sy=null; 
+  document.addEventListener("touchstart",function(e) {
+    if ( e.touches.length > 1)
+      return;
+    sx=e.touches[0].clientX;
+    sy=e.touches[0].clientY;
+  });
+  document.addEventListener("touchmove",function(e){
+    if ( !sx || !sy)
+      return; // no touch start
+    var dx = e.touches[0].clientX - sx;
+    var dy = e.touches[0].clientY - sy;
+    if ( Math.abs(dx) < 40 ) // 40 pixel threshold
+        return;
+    if( Math.abs(dx) > Math.abs(dy) ){ // horizontal stuff
+      if ( dx > 0 )
+        Next(true); // left
+      else
+        Next(); // right
+    }
+    /* vertical is annoying
+    else{
+      if ( dy > 0)
+        Next(true); // up
+      else
+        Next(); // down
+    }
+    */
+    sy = null;
+    sy = null;
+  });
 </script>
 
 </body>
